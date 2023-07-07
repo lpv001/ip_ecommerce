@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as o,a as s}from"./index-4072011c.js";const c={},_={class:"home"},n=s("h1",null,"This is an product page",-1),a=[n];function r(d,i){return t(),o("div",_,a)}const u=e(c,[["render",r]]);export{u as default};

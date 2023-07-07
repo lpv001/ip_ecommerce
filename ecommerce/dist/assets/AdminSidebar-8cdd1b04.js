@@ -1,0 +1,1 @@
+import{_ as t,o,c as s,a as e}from"./index-4072011c.js";const _={},c={class:"sidebar"},n=e("li",null,"List Product",-1),i=e("li",null,"Create Product",-1),r=e("li",null,"Logout",-1),a=[n,i,r];function d(l,u){return o(),s("div",c,a)}const m=t(_,[["render",d]]);export{m as A};
