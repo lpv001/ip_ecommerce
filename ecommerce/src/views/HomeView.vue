@@ -32,11 +32,11 @@
       <div class="listing">
 
         <div class="box" v-for="product in products" :key="product">
-          <div class="image">
-            <img src="../assets/images/amazon.jpeg" alt="">
+          <div class="image" @click="go_to_detail(product._id)">
+            <img v-bind:src="image_url + '/' + product.image_path" alt="">
           </div>
           <div class="text">
-            <h6>{{product.product_name}}</h6>
+            <h6 @click="go_to_detail(product._id)">{{product.product_name}}</h6>
             <span>From ${{product.product_price}}</span>
             <p>{{product.brand}}</p>
           </div>
@@ -198,6 +198,7 @@
   #list .listing .box .image img{
     width: 100%;
     object-fit: cover;
+    cursor: pointer;
   }
   #list .listing .box .text{
     padding: 10px;
@@ -207,6 +208,7 @@
   #list .listing .box .text h6{
     font-size: 18px;
     font-weight: 600;
+    cursor: pointer;
   }
   #list .listing .box .text span{
     color: rgb(26, 126, 26);
@@ -253,13 +255,15 @@
 import axios from 'axios'
 import HeaderComponent from '../components/HeaderComponent.vue'
 import FooterComponent from '../components/FooterComponent.vue'
-import {product_url} from '../url.js'
+import {product_url, image_url} from '../url.js'
+import router from '../router/index.js'
 
 export default {
   name: 'homeview',
   data(){
     return {
-      products: []
+      products: [],
+      image_url: image_url
     }
   },
   components: {
@@ -267,9 +271,12 @@ export default {
     FooterComponent: FooterComponent,
   },
   methods: {
-
+    go_to_detail(id){
+      router.push('/detail?id='+id)
+    }
   },
   mounted(){
+    window.scrollTo(0,0)
     axios.get( product_url + '/v1/product/get_all_product')
       .then((response) => {
         this.products = response.data

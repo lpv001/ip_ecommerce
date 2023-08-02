@@ -66,19 +66,33 @@ const login = async (req, res) => {
 }
 
 const getuser = async (req ,res) => {
-    const id = req.params.id
-    const cookies = req.cookies
-    console.log(cookies)
+    try {
+        const cookies = JSON.parse(req.cookies.accessToken)
+        jwt.verify(cookies, 'sfbsd!sad@!dsf#$#w', (err, user) => {
+            if (err) {
+                return res.status(401).json(err)
+            }else{
+                return res.status(201).json({user: user})
+            }
+        })
+    } catch (error) {
+        return res.status(400).json(error)
+    }
+}
+
+const logout = async (req, res) => {
+    return res.status(204).clearCookie('accessToken').send("Logout successfuly")
 }
 
 function getToken(user) {
     return jwt.sign({
         data: user,
-    },"sfbsd!sad@!dsf#$#", { expiresIn: '60d' })
+    },"sfbsd!sad@!dsf#$#w", { expiresIn: '60d' })
 }
 
 export {
     register,
     login,
-    getuser
+    getuser,
+    logout
 }

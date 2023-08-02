@@ -5,39 +5,41 @@
             <h2 style="font-size: 16px;">Home > Customer Information > Shipping Information > Payment Information</h2>
             <div class="product-box">
                 <div class="list-product">
+                    <form @submit.prevent="handleform">
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
                             <h1 style="font-size: 26px; font-weight: 300;">Customer Information</h1>
                             <a href="#" style="font-size: 12px; color: lightcoral;">The deliver will email once product arrived </a>
                         </div>
-                        <input type="text" placeholder="Email" style="border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                        <input required v-model="email" type="text" placeholder="Email" style="border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
                     </div>
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
-                            <h1 style="font-size: 26px; font-weight: 300;">Shipping Address</h1>
+                            <h1 style="font-size: 26px; font-weight: 300;">Payment Information</h1>
                             <!-- <a href="#" style="font-size: 12px; color: lightcoral;">The deliver will email once product arrived </a> -->
                         </div>
                         <div class="input">
-                            <input type="text" placeholder="First Name" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
-                            <input type="text" placeholder="Last Name" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="firstname" type="text" placeholder="First Name" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="lastname" type="text" placeholder="Last Name" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
                         </div>
-                        <input type="text" placeholder="Company (optional)" style="border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                        <input required v-model="company" type="text" placeholder="Company (optional)" style="border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
                         <div class="input">
-                            <input type="text" placeholder="Address" style="flex: 2; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
-                            <input type="text" placeholder="Apt (Optional)" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="card_number" type="text" placeholder="Card Number" style="flex: 2; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="code" type="text" placeholder="Code" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
                         </div>
                         <div class="input">
-                            <input type="text" placeholder="Country" style="flex: 3; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
-                            <input type="text" placeholder="State" style="flex: 2; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
-                            <input type="text" placeholder="Zip" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="country" type="text" placeholder="Country" style="flex: 3; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="state" type="text" placeholder="State" style="flex: 2; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
+                            <input required v-model="zip" type="text" placeholder="Zip" style="flex: 1; border: 1px solid lightgrey; border-radius: 5px; padding: 2px 10px;">
                         </div>
                     </div>
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
-                            <p>&lt; Return to Shipping Information</p>
-                            <button style="background: rgb(0, 102, 255); padding: 2px 25px; color: #fff; border: 0; border-radius: 3px;">Make Purchase</button>
+                            <p></p>
+                            <button type="submit" style="background: rgb(0, 102, 255); padding: 2px 25px; color: #fff; border: 0; border-radius: 3px;">Make Purchase</button>
                         </div>
                     </div>
+                </form>
                 </div>
                 <div class="check-out">
                     <h4>Summary ( 4 Item )</h4>
@@ -223,15 +225,96 @@
     import axios from 'axios'
     import HeaderComponent from '../components/HeaderComponent.vue'
     import FooterComponent from '../components/FooterComponent.vue'
+    import { product_url } from '../url'
+    import router from '../router'
+    
 
     export default {
         name: 'detail',
         data (){
-            return {}
+            return {
+                email: '',
+                firstname: '',
+                lastname: '',
+                company: '',
+                card_number: '',
+                code: '',
+                country: '',
+                state: '',
+                zip: '',
+                u_id: ''
+            }
+        },
+        methods: {
+            handleform(e){
+                e.preventDefault()
+                let cart_info = {
+                    email: this.email,
+                    address: this.ship_info.location,
+                    type: this.ship_info.type,
+                    firstname: this.firstname,
+                    lastname: this.lastname,
+                    company: this.company,
+                    card: this.card_number,
+                    code: this.code,
+                    country: this.country,
+                    state: this.state,
+                    zip: this.zip,
+                    user_id: this.u_id
+                }
+
+                axios.post(product_url + '/v1/address/record_user_shipping_info', cart_info)
+                .then((response) => {
+                    
+                })
+
+                axios.post(product_url + '/v1/order/record_user_order', {user_id: this.u_id})
+                .then((response) => {
+                    if(response.status === 200){
+                        this.$store.state.myCartProductList.forEach((product) => {
+                            let product_id = JSON.parse(JSON.stringify(product._id))
+                            let order_id = response.data._id
+                            let size = JSON.parse(JSON.stringify(product.size))
+                            let quantity = JSON.parse(JSON.stringify(product.quantity))
+                            let post_obj = {
+                                order_id: order_id,
+                                product_id: product_id,
+                                size: size,
+                                quantity: quantity
+                            }
+                            axios.post(product_url + '/v1/cart/record_user_cart', post_obj)
+                        })
+                        this.$swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Purchase succesful ...',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        window.setTimeout(() => {router.push('/')}, 2000)
+                    }
+                })
+            }
         },
         components: {
             HeaderComponent: HeaderComponent,
             FooterComponent: FooterComponent
-        }
+        },
+        mounted(){
+            axios.get(product_url + '/v1/client/me', {withCredentials: true})
+              .then((response) => {
+                  if(response.status === 201 && this.ship_info.location) {
+                    this.u_id = response.data.user.data._id
+                    router.push('/payment')
+                  }
+                  else router.push('/shipping')
+              })
+              .catch((err) => router.push('/login'))
+        },
+        computed: {
+            ship_info(){
+                return JSON.parse(JSON.stringify(this.$store.state.myAddress))
+            }
+        },
     }
 </script>

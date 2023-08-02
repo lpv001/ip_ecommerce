@@ -27,6 +27,7 @@ html,
 body{
     height: 100%;
     max-width: 100%;
+    position: relative;
 }
 
 /* Set core body defaults */
@@ -55,4 +56,8 @@ header{
   -moz-user-select: none; /* mozilla browsers */
   -khtml-user-select: none; /* webkit (konqueror) browsers */
   -ms-user-select: none; /* IE10+ */
+}
+
+main{
+  padding-top: 80px;
 }

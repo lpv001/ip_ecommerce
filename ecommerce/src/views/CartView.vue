@@ -4,7 +4,7 @@
         <div class="align-box">
             <h2>Your Cart</h2>
             <div class="product-box">
-                <div class="list-product">
+                <div class="list-product" style="min-height: 50vh;">
                     <div class="card">
                         <div class="image-container">
                             <p>Item</p>
@@ -14,69 +14,33 @@
                             <p>Quantity</p>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="image-container">
-                            <img src="../assets/images/amazon.jpeg" >
-                            <div class="des">
-                                <p>Title: Luxury Bag</p>
-                                <p>Size: Small</p>
+                    <div class="listi" v-for="cart in cartProductInfo" :key="cart._id">
+                        <div class="card">
+                            <div class="image-container">
+                                <img v-bind:src="image_url + '/' + cart.image_path" >
+                                <div class="des">
+                                    <p>Title: {{ cart.product_title }}</p>
+                                    <p>Size: {{ cart.size }}</p>
+                                </div>
+                            </div>
+                            <p>${{ cart.product_price }}</p>
+                            <div class="quantity">
+                                <p>{{ cart.quantity }}</p>
                             </div>
                         </div>
-                        <p>$200.00</p>
-                        <div class="quantity">
-                            <p>1</p>
+                        <div class="hr">
+                            <p>
+                                <span style="font-weight: 400;">Subtotal: </span>
+                                <span style="font-weight: 600;">{{ cart.product_price * cart.quantity }}$</span>
+                            </p>
                         </div>
-                    </div>
-                    <div class="hr">
-                        <p>
-                            <span style="font-weight: 400;">Subtotal: </span>
-                            <span style="font-weight: 600;">500$</span>
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="image-container">
-                            <img src="../assets/images/amazon.jpeg" >
-                            <div class="des">
-                                <p>Title: Luxury Bag</p>
-                                <p>Size: Small</p>
-                            </div>
-                        </div>
-                        <p>$200.00</p>
-                        <div class="quantity">
-                            <p>1</p>
-                        </div>
-                    </div>
-                    <div class="hr">
-                        <p>
-                            <span style="font-weight: 400;">Subtotal: </span>
-                            <span style="font-weight: 600;">500$</span>
-                        </p>
-                    </div>
-                    <div class="card">
-                        <div class="image-container">
-                            <img src="../assets/images/amazon.jpeg" >
-                            <div class="des">
-                                <p>Title: Luxury Bag</p>
-                                <p>Size: Small</p>
-                            </div>
-                        </div>
-                        <p>$200.00</p>
-                        <div class="quantity">
-                            <p>1</p>
-                        </div>
-                    </div>
-                    <div class="hr">
-                        <p>
-                            <span style="font-weight: 400;">Subtotal: </span>
-                            <span style="font-weight: 600;">500$</span>
-                        </p>
                     </div>
                 </div>
-                <div class="check-out">
+                <div class="check_out">
                     <h4>Summary ( 4 Item )</h4>
                     <div class="bt">
                         <p>Subtotal</p>
-                        <p>$1200.00</p>
+                        <p>${{ total_price }}</p>
                     </div>
                     <div class="bt">
                         <p>Shipping</p>
@@ -87,7 +51,7 @@
                         <p>-</p>
                     </div>
                     <hr />
-                    <button>Checkout</button>
+                    <button><RouterLink to="/shipping">Checkout</RouterLink></button>
                 </div>
             </div>
         </div>
@@ -168,18 +132,18 @@
         flex: 1;
     }
 
-    .align-box .product-box .check-out{
+    .align-box .product-box .check_out{
         flex: 1;
         border: 1px solid silver;
         padding: 20px;
     }
 
-    .align-box .product-box .check-out h4{
+    .align-box .product-box .check_out h4{
         font-weight: 500;
         margin-bottom: 25px;
     }
 
-    .align-box .product-box .check-out .bt{
+    .align-box .product-box .check_out .bt{
         display: flex;
         font-size: 14px;
         justify-content: space-between;
@@ -187,12 +151,12 @@
         font-weight: 300;
     }
 
-    .align-box .product-box .check-out hr{
+    .align-box .product-box .check_out hr{
         margin-top: 30px;
         margin-bottom: 30px;
     }
 
-    .align-box .product-box .check-out button{
+    .align-box .product-box .check_out button{
         width: 100%;
         background: #581067;
         color: #fff;
@@ -243,6 +207,18 @@
         components: {
             HeaderComponent: HeaderComponent,
             FooterComponent: FooterComponent
-        }
+        },
+        computed: {
+            cartProductInfo(){
+                return this.$store.state.myCartProductList
+            },
+            total_price(){
+                let total_price = 0
+                this.$store.state.myCartProductList.map((t) => {
+                    total_price += t.quantity * t.product_price
+                })
+                return total_price
+            }
+        },
     }
 </script>

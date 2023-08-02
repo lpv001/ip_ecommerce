@@ -5,12 +5,14 @@
             <h2 style="font-size: 16px;">Home > Customer Information > Shipping Information</h2>
             <div class="product-box">
                 <div class="list-product">
+                    <form>
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
                             <h1 style="font-size: 26px; font-weight: 300;">Shipping Address</h1>
                             <a href="#" style="font-size: 12px; color: blue;">Edit</a>
                         </div>
-                        <p style="color: lightslategray;">12 Waldo Point Road, Mishauken, NY 120</p>
+                        <input v-model="address" type="text" style="color: lightslategray; border: 1px solid lightslategray; padding-left: 10px; padding: 5px 10px;" required>
+                        <!-- <p style="color: lightslategray;">12 Waldo Point Road, Mishauken, NY 120</p> -->
                     </div>
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px; width: 100%;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
@@ -19,28 +21,28 @@
                         </div>
                         <div style="font-size: 14px; color: lightslategray; display: flex; width: 100%; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 20px;">
-                                <input name="ship" value="ground" type="radio" id="ups_ground">
+                                <input name="ship" v-model="ship" value="ground" type="radio" id="ups_ground" checked>
                                 <label for="ups_ground">UPS Ground</label>
                             </div>
                             <p style="text-align: end;">$2.20</p>
                         </div>
                         <div style="font-size: 14px; color: lightslategray; display: flex; width: 100%; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 20px;">
-                                <input name="ship" value="3day" type="radio" id="3-day">
+                                <input name="ship" v-model="ship" value="3day" type="radio" id="3-day">
                                 <label for="3-day">UPS 3 Day Select</label>
                             </div>
                             <p style="text-align: end;">$5.20</p>
                         </div>
                         <div style="font-size: 14px; color: lightslategray; display: flex; width: 100%; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 20px;">
-                                <input name="ship" value="2nd" type="radio" id="4-day">
+                                <input name="ship" v-model="ship" value="2nd" type="radio" id="4-day">
                                 <label for="4-day">UPS 2nd Day Air</label>
                             </div>
                             <p style="text-align: end;">$9.50</p>
                         </div>
                         <div style="font-size: 14px; color: lightslategray; display: flex; width: 100%; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 20px;">
-                                <input name="ship" value="next" type="radio" id="ups_ground1">
+                                <input name="ship" v-model="ship" value="next" type="radio" id="ups_ground1">
                                 <label for="ups_ground1">UPS Next Day Air</label>
                             </div>
                             <p style="text-align: end;">$12.40</p>
@@ -48,10 +50,11 @@
                     </div>
                     <div class="card" style="flex-direction: column; gap: 20px; margin-bottom: 30px;">
                         <div style="align-items: center; width: 100%; display:flex; justify-content: space-between;">
-                            <p>&lt; Return to Cart</p>
-                            <button style="background: rgb(0, 102, 255); padding: 2px 25px; color: #fff; border: 0; border-radius: 3px;">Continue to Payment</button>
+                            <p><RouterLink to="/cart">&lt; Return to Cart</RouterLink></p>
+                            <button @click="handle_shipping" style="background: rgb(0, 102, 255); padding: 2px 25px; color: #fff; border: 0; border-radius: 3px;">Continue to Payment</button>
                         </div>
                     </div>
+                    </form>
                 </div>
                 <div class="check-out">
                     <h4>Summary ( 4 Item )</h4>
@@ -229,15 +232,41 @@
     import axios from 'axios'
     import HeaderComponent from '../components/HeaderComponent.vue'
     import FooterComponent from '../components/FooterComponent.vue'
+    import { product_url } from '../url'
+    import router from '../router'
 
     export default {
         name: 'detail',
         data (){
-            return {}
+            return {
+                address: '',
+                ship: 'ground',
+            }
+        },
+        methods: {
+            handle_shipping(e){
+                e.preventDefault()
+                let address_info = {
+                    location: this.address,
+                    type: this.ship
+                }
+                this.$store.commit('SET_SHIP_ADDRESS', address_info)
+
+                if (this.address !== '')
+                router.push('/payment')
+            }
         },
         components: {
             HeaderComponent: HeaderComponent,
             FooterComponent: FooterComponent
+        },
+        mounted(){
+            axios.get(product_url + '/v1/client/me', {withCredentials: true})
+              .then((response) => {
+                  if(response.status === 201) router.push('/shipping')
+                  
+              })
+              .catch((err) => router.push('/login'))
         }
     }
 </script>

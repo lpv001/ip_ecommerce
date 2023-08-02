@@ -1,8 +1,9 @@
 <template>
   <div class="sidebar">
-    <li>List Product</li>
-    <li>Create Product</li>
-    <li>Logout</li>
+    <RouterLink to="/list_product"><li>List Product</li></RouterLink>
+    <RouterLink to="/create_product"><li>Create Product</li></RouterLink>
+    <RouterLink to="/list_order"><li>List Order</li></RouterLink>
+    <li @click="logout">Logout</li>
   </div>
 </template>
 
@@ -34,3 +35,20 @@
     color: #000;
 }
 </style>
+
+<script>
+import axios from 'axios'
+import { product_url } from '../url'
+import router from '../router'
+
+  export default{
+    methods: {
+      logout(){
+        axios.get(product_url + '/v1/user/logout').then((res) => {
+          router.push('/adminlogin')
+        })
+      }
+    }
+  }
+
+</script>

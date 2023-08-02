@@ -2,29 +2,16 @@
     <div class="wapper">
         <admin-sidebar />
         <div class="listing">
-            <div class="box">
-                <img src="../assets/images/amazon.jpeg" alt="">
+            <div v-for="product in products" :key="product._id" class="box">
+                <img v-bind:src="image_url + '/' + product.image_path" alt="">
                 <div class="description">
-                    <h1>Product name: Jinro</h1>
-                    <p>Brand: Louis</p>
-                    <p>Description: No</p>
-                    <p>Price: 12$</p>
+                    <h1>Product name: {{ product.product_name }}</h1>
+                    <p>Brand: {{ product.brand }}</p>
+                    <p>Description: {{ product.product_description }}</p>
+                    <p>Price: {{ product.product_price }}$</p>
                     <div class="buttons">
                         <button>Edit</button>
-                        <button>Delete</button>
-                    </div>
-                </div>
-            </div>
-            <div class="box">
-                <img src="../assets/images/amazon.jpeg" alt="">
-                <div class="description">
-                    <h1>Product name: Jinro</h1>
-                    <p>Brand: Louis</p>
-                    <p>Description: No</p>
-                    <p>Price: 12$</p>
-                    <div class="buttons">
-                        <button>Edit</button>
-                        <button>Delete</button>
+                        <button @click="delete_product(product._id)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -87,9 +74,37 @@
 
 <script>
 import AdminSidebar from '../components/AdminSidebar.vue'
+import axios from 'axios'
+import { product_url, image_url } from '../url'
+import router from '../router'
+
 export default {
+    data(){
+        return {
+            products: [],
+            image_url: image_url
+        }
+    },
     components: {
         AdminSidebar: AdminSidebar
+    },
+    methods: {
+        delete_product(_id){
+            axios.delete(product_url + '/v1/product/delete/' + _id)
+            this.products = this.products.filter(data => data._id != _id)
+        }
+    },  
+    mounted(){
+        window.scrollTo(0,0)
+        axios.get(product_url + '/v1/user/me', {withCredentials: true})
+            .then((response) => {
+                if(response.status === 201) router.push('/list_product')
+            })
+            .catch((err) => {router.push('/adminlogin')})
+        axios.get(product_url + '/v1/product/get_all_product')
+        .then((response) => {
+            this.products = response.data
+        })
     }
 }
 </script>

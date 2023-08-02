@@ -19,6 +19,18 @@ const ProductSchema = mongoose.Schema({
         type: String,
         require: true
     },
+    op1:{
+        type: String,
+        require: true
+    },
+    op2:{
+        type: String,
+        require: true
+    },
+    op3:{
+        type: String,
+        require: true
+    },
     product_description:{
         type: String,
         require: true

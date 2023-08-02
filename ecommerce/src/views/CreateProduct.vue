@@ -19,8 +19,8 @@
                 <div className="radio-field">
                     <label htmlFor="title">CATEGORY</label>
                     <div className="arrange-radio">
-                    <div className="selection" >
-                        <p id="option-text" @click="open_category">SELECT CATEGORY</p>
+                    <div className="selection"  @click="open_category" >
+                        <p id="option-text">SELECT CATEGORY</p>
                         <div></div>
                     </div>
                     <div className="radio-container" id="category_holder">
@@ -35,19 +35,27 @@
                     </div>
                     </div>
                 </div>
-                <div className="preview">
-                    <label htmlFor=""></label>
-                    <img src="" />
-                </div>
                 <div className="image-field">
                     <label htmlFor="">IMAGE</label>
-                    <input type="file" className='custom-file-input' />
+                    <input @change="handle_image" type="file" className='custom-file-input' />
+                </div>
+                <div className="image-field">
+                    <label htmlFor="">Op1</label>
+                    <input @change="handle_op1" type="file" className='custom-file-input' />
+                </div>
+                <div className="image-field">
+                    <label htmlFor="">Op2</label>
+                    <input @change="handle_op2" type="file" className='custom-file-input' />
+                </div>
+                <div className="image-field">
+                    <label htmlFor="">Op3</label>
+                    <input @change="handle_op3" type="file" className='custom-file-input' />
                 </div>
                 <div className="paragraph-field">
                     <label htmlFor="">Description</label>
                     <textarea v-model="description"></textarea>
                 </div>
-                <button @click="create_product">SUBMIT ARTICLE FORM</button>
+                <button @click="create_product">SUBMIT PRODUCT FORM</button>
                 </form>
             </div>
         </div>
@@ -306,8 +314,12 @@
 <script>
 
 var trigger = false
+var form_data = new FormData()
 
 import AdminSidebar from '../components/AdminSidebar.vue'
+import { product_url } from '../url'
+import axios from 'axios'
+
 export default {
   components: {
     AdminSidebar: AdminSidebar
@@ -318,17 +330,37 @@ export default {
           brand: '',
           product_price: '',
           description: '',
-          category: ''
+          category: '',
+          image: '',
+          op1: '',
+          op2: '',
+          op3: ''
       }
   },
   methods: {
       create_product(e){
           e.preventDefault()
           const request_data = {
-              product_name: this.product_name,
-              category: this.category
+            product_name: this.product_name,
+            product_price: this.product_price,
+            brand: this.brand,
+            image_path: this.image,
+            op1: this.op1,
+            op2: this.op2,
+            op3: this.op3,
+            product_description: this.description,
+            category: this.category
           }
-          console.log(request_data)
+          try {
+            axios.post(product_url + "/v1/upload/blogs_image", form_data, {headers: {"Content-Type": "multipart/form-data"}})
+            axios.post(product_url + '/v1/product/create_product', request_data)
+              .then((response) => {
+                if (response.status === 200) alert('create success')
+              })
+          } catch (error) {
+            alert('something went wrong')
+          }
+
       },
       open_category(){
           let category = document.getElementById('category_holder')
@@ -345,7 +377,38 @@ export default {
           option_text.innerHTML = value
           category.style.display = "none"
           trigger = false
-      }
+      },
+      handle_image(e){
+        this.image = Date.now() + '-' + e.target.files[0].name
+        const main_image = new File([e.target.files[0]], this.image, {type: e.target.files[0].type})
+        form_data.append('image', main_image)
+      },
+      handle_op1(e){
+        this.op1 = Date.now() + '-' + e.target.files[0].name
+        const op1_image = new File([e.target.files[0]], this.op1, {type: e.target.files[0].type})
+        form_data.append('image', op1_image)
+      },
+      handle_op2(e){
+        this.op2 = Date.now() + '-' + e.target.files[0].name
+        const op2_image = new File([e.target.files[0]], this.op2, {type: e.target.files[0].type})
+        form_data.append('image', op2_image)
+      },
+      handle_op3(e){
+        this.op3 = Date.now() + '-' + e.target.files[0].name
+        const op3_image = new File([e.target.files[0]], this.op3, {type: e.target.files[0].type})
+        form_data.append('image', op3_image)
+      },
+  },
+  mounted(){
+    axios.get(product_url + '/v1/user/me', {withCredentials: true})
+            .then((response) => {
+                if(response.status === 201) router.push('/list_product')
+            })
+            .catch((err) => {router.push('/adminlogin')})
+    axios.get(product_url + '/v1/user/me', {withCredentials: true})
+            .then((response) => {
+                if(response.status === 201) router.push('/list_product')
+            })
   }
 }
 </script>

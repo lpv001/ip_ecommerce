@@ -46,6 +46,8 @@
 <script>
 
 import axios from 'axios'
+import router from '../router'
+import { product_url } from '../url'
 
 export default {
     name: 'loginview',
@@ -65,6 +67,7 @@ export default {
                     if(response.status === 200){
                         this.exception = ''
                         localStorage.setItem('user_id', response.data.id)
+                        router.push('/list_product')
                     }else{
                         this.exception = 'email or password incorrect'
                     }
@@ -73,6 +76,12 @@ export default {
                     this.exception = 'email or password incorrect'
                 }) 
         }
+    },
+    mounted(){
+        axios.get(product_url + '/v1/user/me', {withCredentials: true})
+            .then((response) => {
+                if(response.status === 201) router.push('/list_product')
+            })
     }
 }
 </script>

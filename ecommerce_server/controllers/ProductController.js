@@ -6,6 +6,9 @@ const create_product = async (req, res) => {
         product_price,
         brand,
         image_path,
+        op1,
+        op2,
+        op3,
         product_description,
         category
     } = req.body
@@ -15,6 +18,9 @@ const create_product = async (req, res) => {
         product_price,
         brand,
         image_path,
+        op1,
+        op2,
+        op3,
         product_description,
         category
     })
@@ -25,6 +31,7 @@ const create_product = async (req, res) => {
     } catch (error) {
         return res.json(error)
     }
+    
 }
 
 const get_all_product = async (req, res) => {
@@ -36,9 +43,28 @@ const get_all_product = async (req, res) => {
     }
 }
 
+const get_product_by_category = async (req, res) => {
+    const category = req.params.category
+    try {
+        const product = await ProductModel.find({category})
+        return res.status(200).json(product)
+    } catch (error) {
+        return res.json(error)
+    }
+}
+
+const get_product_by_id = async(req, res) => {
+    const _id = req.params.id
+    try {
+        const product = await ProductModel.findOne({_id})
+        return res.status(200).json(product)
+    } catch (error) {
+        return res.json(error)
+    }
+}
+
 const delete_product_by_id = async (req, res) => {
     const _id = req.params.id
-    console.log(_id)
     try {
         await ProductModel.deleteOne({ _id: _id })
         return res.status(200).json({message: "delete succesfully!"})
@@ -50,5 +76,7 @@ const delete_product_by_id = async (req, res) => {
 export {
     create_product,
     get_all_product,
-    delete_product_by_id
+    delete_product_by_id,
+    get_product_by_category,
+    get_product_by_id
 }

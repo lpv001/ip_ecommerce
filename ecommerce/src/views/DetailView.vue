@@ -4,27 +4,27 @@
         <div class="align-box">
             <div class="tag">
                 <span>Home > Category > </span>
-                <span>Product Title</span>
+                <span>{{ product.product_name }}</span>
             </div>
             <div class="product-box">
                 <div class="product-image">
                     <div class="main-img">
-                        <img src="../assets/images/amazon.jpeg">
+                        <img v-bind:src="image_url + '/' + product.image_path">
                     </div>
                     <div class="bottom-img">
                         <div class="box">
-                            <img src="../assets/images/amazon.jpeg">
+                            <img v-bind:src="(product.op1) ? (image_url + '/' + product.op1) : null">
                         </div>
                         <div class="box">
-                            <img src="../assets/images/amazon.jpeg">
+                            <img v-bind:src="(product.op2) ? (image_url + '/' + product.op2) : null">
                         </div>
                         <div class="box">
-                            <img src="../assets/images/amazon.jpeg">
+                            <img v-bind:src="(product.op3) ? (image_url + '/' + product.op3) : null">
                         </div>
                     </div>
                 </div>
                 <div class="product-detail">
-                    <h1>Gennility Bag Page</h1>
+                    <h1>{{ product.product_name }}</h1>
                     <h6>(Limited Edition)</h6>
                     <hr />
                     <div class="size">
@@ -33,66 +33,36 @@
                     </div>
                     <div class="align-submit">
                         <div class="button">
-                            <button>XS</button>
-                            <button>S</button>
-                            <button>M</button>
+                            <button @click="set_size('XS')" v-bind:style= "[size == 'XS' ? {background: '#121212', color: '#fff'} : {background: 'white'}]">XS</button>
+                            <button @click="set_size('S')" v-bind:style= "[size == 'S' ? {background: '#121212', color: '#fff'} : {background: 'white'}]">S</button>
+                            <button @click="set_size('M')" v-bind:style= "[size == 'M' ? {background: '#121212', color: '#fff'} : {background: 'white'}]">M</button>
                         </div>
                         <hr />
                         <h5>Quantity</h5>
                         <div class="quantity">
-                            <div>1</div>
-                            <div>+</div>
-                            <div>-</div>
+                            <div>{{ quantity }}</div>
+                            <div @click="increase_quantity">+</div>
+                            <div @click="decrease_quantity">-</div>
                         </div>
                         <hr />
                         <div class="price">
                             <p>Total Price:</p>
-                            <p>$9500</p>
+                            <p>${{ product.product_price * quantity }}</p>
                         </div>
-                        <button id="add_to_card">ADD TO CART</button>
+                        <button id="add_to_card" @click="add_to_cart">ADD TO CART</button>
                     </div>
                 </div>
             </div>
             <div class="related">
                 <h2>RELATED PRODUCT</h2>
                 <div class="related-box">
-                    <div class="box">
-                        <div class="image">
-                            <img src="../assets/images/amazon.jpeg" >
+                    <div class="box" v-for="product in products.slice(0, 4)" :key="product.id">
+                        <div class="image" @click="go_to_detail(product._id)">
+                            <img v-bind:src="image_url + '/' + product.image_path" >
                         </div>
                         <div class="text">
-                            <h6>Sneaker Red</h6>
-                            <span>From $1200</span>
-                            <p>Gucci</p>
-                        </div>
-                    </div>
-                    <div class="box">
-                        <div class="image">
-                            <img src="../assets/images/amazon.jpeg" >
-                        </div>
-                        <div class="text">
-                            <h6>Sneaker Red</h6>
-                            <span>From $1200</span>
-                            <p>Gucci</p>
-                        </div>
-                    </div>
-                    <div class="box">
-                        <div class="image">
-                            <img src="../assets/images/amazon.jpeg" >
-                        </div>
-                        <div class="text">
-                            <h6>Sneaker Red</h6>
-                            <span>From $1200</span>
-                            <p>Gucci</p>
-                        </div>
-                    </div>
-                    <div class="box">
-                        <div class="image">
-                            <img src="../assets/images/amazon.jpeg" >
-                        </div>
-                        <div class="text">
-                            <h6>Sneaker Red</h6>
-                            <span>From $1200</span>
+                            <h6 @click="go_to_detail(product._id)">Sneaker Red</h6>
+                            <span>From ${{ product.product_price }}</span>
                             <p>Gucci</p>
                         </div>
                     </div>
@@ -304,6 +274,7 @@
   .align-box .related .related-box .box .image img{
     width: 100%;
     object-fit: cover;
+    cursor: pointer;
   }
   .align-box .related .related-box .box .text{
     padding: 10px;
@@ -313,6 +284,7 @@
   .align-box .related .related-box .box .text h6{
     font-size: 18px;
     font-weight: 600;
+    cursor: pointer;
   }
   .align-box .related .related-box .box .text span{
     color: rgb(26, 126, 26);
@@ -359,15 +331,67 @@
     import axios from 'axios'
     import HeaderComponent from '../components/HeaderComponent.vue'
     import FooterComponent from '../components/FooterComponent.vue'
+    import { useRoute } from 'vue-router'
+    import { product_url, image_url } from '../url'
+    import router from '../router/index.js'
 
     export default {
         name: 'detail',
         data (){
-            return {}
+            return {
+                product: {},
+                products: [],
+                image_url: image_url,
+                quantity: 1,
+                size: 'XS',
+            }
         },
         components: {
             HeaderComponent: HeaderComponent,
             FooterComponent: FooterComponent
+        },
+        methods: {
+            go_to_detail(id){
+                router.push('/detail?id='+id)
+                window.scrollTo(0,0)
+                axios.get( product_url + '/v1/product/get_product_by_id/' + id)
+                    .then((response) => {
+                        this.product = response.data
+                    })
+            },
+            increase_quantity(){
+                this.quantity = this.quantity + 1
+            },
+            decrease_quantity(){
+                if( this.quantity > 1) this.quantity = this.quantity - 1
+            },
+            set_size(size){
+                this.size = size
+            },
+            add_to_cart(){
+                // let item = {
+                //     item_data: this.product,
+                //     size: this.size,
+                //     quantity: this.quantity
+                // }
+                let product_detail = JSON.parse(JSON.stringify(this.product))
+                let info = {size: this.size, quantity: this.quantity}
+                let item = {...product_detail, ...info}
+                this.$store.commit('ADD_TO_CART', item)
+            }
+        },
+        mounted(){
+            window.scrollTo(0,0)
+            const route = useRoute();
+            const id = route.query.id;
+            axios.get( product_url + '/v1/product/get_product_by_id/'+id)
+                .then((response) => {
+                    this.product = response.data
+                    axios.get( product_url + '/v1/product/get_product_by_category/' + response.data.category)
+                        .then((response) => {
+                            this.products = response.data
+                        })
+                })
         }
     }
 </script>
