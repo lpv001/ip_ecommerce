@@ -62,12 +62,14 @@ export default {
         login(e){
             e.preventDefault()
             const request_data = {email: this.email, password: this.password}
-            axios.post('http://localhost:3000/api/v1/user/login', request_data, {withCredentials:true})
+            axios.post(product_url + '/v1/user/login', request_data, {withCredentials:true})
                 .then((response) => {
                     if(response.status === 200){
                         this.exception = ''
                         localStorage.setItem('user_id', response.data.id)
-                        router.push('/list_product')
+                        window.setTimeout(() => {
+                            router.push('/list_product')
+                        }, 2000)
                     }else{
                         this.exception = 'email or password incorrect'
                     }

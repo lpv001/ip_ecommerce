@@ -54,9 +54,9 @@ const login = async (req, res) => {
         return res.status(200).cookie('accessToken', JSON.stringify(accessToken), {
             sameSite: 'strict',
             path: '/',
-            secure: true,
+            secure: false,
             expires: new Date(new Date().getTime() + 3600 * 1000),
-            httpOnly: true
+            httpOnly: flase
         }).send(embed_data)
 
     } catch (error) {
